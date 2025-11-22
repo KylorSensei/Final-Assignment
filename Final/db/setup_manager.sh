@@ -9,18 +9,18 @@ ROOT_PASS="${3:-rootpass}"
 
 export DEBIAN_FRONTEND=noninteractive
 
-# Eviter les erreurs de lock apt sur nouvelles instances
+# Avoid apt locks/errors on fresh instances
 retry_apt() {
   for i in {1..20}; do
     if apt-get update -y && apt-get install -y mysql-server sysbench wget tar; then
       return 0
     fi
-    echo "apt occupé/échec, retry $i/20 ..."
+    echo "apt busy/failed, retry $i/20 ..."
     rm -f /var/lib/dpkg/lock-frontend /var/lib/apt/lists/lock 2>/dev/null || true
     dpkg --configure -a || true
     sleep 6
   done
-  echo "apt a échoué après plusieurs tentatives"; exit 1
+  echo "apt failed after multiple attempts"; exit 1
 }
 
 echo "[1/6] Install MySQL and sysbench"

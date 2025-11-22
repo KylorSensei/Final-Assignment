@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Benchmark minimal via Gatekeeper:
-- Envoie 1000 READ et 1000 WRITE pour chaque stratégie (direct, random, custom)
-- Utilise /query du Gatekeeper (POST JSON {"sql": "..."}), header X-API-Key: changeme
-- Lit l'IP publique du Gatekeeper depuis Final/infra/instances.json
+Minimal benchmark via Gatekeeper:
+- Sends 1000 READ and 1000 WRITE per strategy (direct, random, custom)
+- Uses Gatekeeper /query (POST JSON {"sql": "..."}), header X-API-Key: changeme
+- Reads Gatekeeper public IP from Final/infra/instances.json
 """
 
 import asyncio
@@ -92,17 +92,17 @@ async def main():
         writer = csv.writer(f)
         writer.writerow(["Label", "Strategy", "Requests", "Success", "Total (s)", "Avg (s)"])
 
-        # Prépare la table pour WRITE
+        # Prepare table for WRITE
         async with aiohttp.ClientSession() as session:
             st, body = await post_sql(session, base, CREATE_TABLE_SQL, "direct")
             print(f"[prepare CREATE TABLE] status={st} body={body}")
 
-        # Pour chaque stratégie: 1000 READ + 1000 WRITE
+        # For each strategy: 1000 READ + 1000 WRITE
         for strat in STRATEGIES:
             await run_block(f"READ {strat}", base, READ_SQL, strat, NUM_REQUESTS, writer)
             await run_block(f"WRITE {strat}", base, WRITE_SQL, strat, NUM_REQUESTS, writer)
 
-    print(f"✅ Résultats écrits: {csv_path}")
+    print(f"Results written: {csv_path}")
 
 
 if __name__ == "__main__":

@@ -52,7 +52,7 @@ ssh $SSH_OPTS "ubuntu@${GK_IP}" 'bash -lc "
   sudo apt-get update -y
   sudo apt-get install -y python3 python3-pip
   python3 -m pip install --user --upgrade pip || true
-  # Installer les dépendances pour l’utilisateur root (exécutées avec sudo plus bas)
+  # Install dependencies for the root user (executed with sudo below)
   sudo -H pip3 install --no-input --upgrade fastapi uvicorn requests
 
   # Env (minimal)

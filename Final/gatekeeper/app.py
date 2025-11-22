@@ -26,8 +26,8 @@ class QueryBody(BaseModel):
 
 def is_safe_sql(sql: str) -> bool:
     """
-    Validation minimale demandée: bloquer requêtes dangereuses évidentes.
-    Sans sur-optimisation: simple détection par sous-chaînes.
+    Minimal validation: block obviously dangerous statements.
+    Keep it simple: substring-based detection.
     """
     s = sql.lower()
     blocked = ["drop ", "truncate ", "alter "]
@@ -45,16 +45,16 @@ def forward_query(
     body: QueryBody,
     strategy: str = Query("direct")
 ):
-    # AuthN simple via header X-API-Key
+    # Simple AuthN via X-API-Key header
     api_key = request.headers.get("x-api-key")
     if api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-    # Validation minimale
+    # Minimal validation
     if not is_safe_sql(body.sql):
         raise HTTPException(status_code=400, detail="Unsafe SQL detected")
 
-    # Forward tel quel au Proxy (Trusted Host)
+    # Forward as-is to Proxy (Trusted Host)
     try:
         resp = requests.post(f"{PROXY_URL}?strategy={strategy}", json={"sql": body.sql}, timeout=10)
         return resp.json(), resp.status_code

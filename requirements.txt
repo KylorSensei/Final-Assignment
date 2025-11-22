@@ -1,0 +1,15 @@
+# Python dependencies for Final assignment
+# Install with: pip install -r Final/requirements.txt
+boto3
+fastapi
+uvicorn
+mysql-connector-python
+requests
+aiohttp
+pydantic
+starlette
+typing_extensions
+typing_inspection
+annotated-types
+anyio
+h11

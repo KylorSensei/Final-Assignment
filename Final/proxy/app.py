@@ -40,8 +40,14 @@ class QueryBody(BaseModel):
 
 def classify_sql(sql: str) -> str:
     s = sql.lstrip().lower()
-    # Minimal classifier: READ if SELECT (and not FOR UPDATE), otherwise WRITE
-    if s.startswith("select") and "for update" not in s:
+    # READ if SELECT/SHOW/DESC/DESCRIBE/EXPLAIN (not FOR UPDATE); otherwise WRITE
+    if (
+        s.startswith("select")
+        or s.startswith("show")
+        or s.startswith("desc")
+        or s.startswith("describe")
+        or s.startswith("explain")
+    ) and "for update" not in s:
         return "read"
     return "write"
 
@@ -126,11 +132,11 @@ def health():
 def query(body: QueryBody, strategy: str = Query("direct", regex="^(direct|random|custom)$")):
     """
     Minimal proxy:
-    - Classify SQL as READ/WRITE.
+    - Classifies SQL as READ/WRITE.
     - Strategies:
-        direct: toujours manager
-        random: READ -> worker aléatoire ; WRITE -> manager
-        custom: READ -> worker avec plus faible latence ; WRITE -> manager
+        direct: always manager
+        random: READ -> random worker; WRITE -> manager
+        custom: READ -> lowest-latency worker; WRITE -> manager
     """
     sql = body.sql
     op = classify_sql(sql)

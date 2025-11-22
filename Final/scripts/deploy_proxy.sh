@@ -47,8 +47,8 @@ ssh $SSH_OPTS "ubuntu@${PROXY_IP}" 'bash -lc "
   python3 -m pip install --user --upgrade pip
   python3 -m pip install --user fastapi uvicorn mysql-connector-python
 
-  # Env for DB creds (defaults match app)
-  echo \"export DB_USER=\${DB_USER:-root}\"     >  ~/.proxy_env
+  # Env for DB creds (defaults: app/password on sakila)
+  echo \"export DB_USER=\${DB_USER:-app}\"     >  ~/.proxy_env
   echo \"export DB_PASSWORD=\${DB_PASSWORD:-password}\" >> ~/.proxy_env
   echo \"export DB_NAME=\${DB_NAME:-sakila}\"   >> ~/.proxy_env
 
